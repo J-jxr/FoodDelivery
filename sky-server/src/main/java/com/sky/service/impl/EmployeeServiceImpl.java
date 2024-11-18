@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -136,6 +137,46 @@ public class EmployeeServiceImpl implements EmployeeService {
         // 调用 employeeMapper 更新数据库中的员工状态
         // 通过传入的 Employee 对象（包含 id 和 status），执行更新操作
         // 这里的 SQL 操作是：update employee set status = ? where id = ?
+        employeeMapper.update(employee);
+    }
+
+    /**
+     *  根据员工 ID 查询员工信息
+     * @param id
+     * @return
+     */
+    @Override
+    // 定义一个方法，根据员工 ID 查询员工信息
+    public Employee getById(Long id) {
+        // 调用数据访问层（Mapper）的方法，通过员工 ID 查询数据库中的员工记录
+        Employee employee = employeeMapper.getById(id);
+
+        // 出于安全考虑，将查询到的员工对象的密码字段设置为 "****"
+        // 这样可以避免直接暴露敏感信息
+        employee.setPassword("****");
+
+        // 返回修改后的员工对象
+        return employee;
+    }
+
+
+    /**
+     * 修改员工信息
+     * @param employeeDTO
+     */
+    @Override
+    public void update(EmployeeDTO employeeDTO) {
+        Employee employee = new Employee();
+        //对象属性拷贝
+        BeanUtils.copyProperties(employeeDTO, employee);
+        //设置修改时间
+        employee.setUpdateTime(LocalDateTime.now());
+        //设置当前记录——修改人id
+        // 后续需要改为当前登录用户的id
+        //从ThreadLocal中取出当前线程的empID
+        employee.setUpdateUser(BaseContext.getCurrentId());
+
+        //调用Mapper层
         employeeMapper.update(employee);
     }
 

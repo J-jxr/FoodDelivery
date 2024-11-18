@@ -38,6 +38,7 @@ public class EmployeeController {
     @Autowired
     private PageHelperAutoConfiguration pageHelperAutoConfiguration;
 
+
     /**
      * 登录
      *
@@ -73,6 +74,7 @@ public class EmployeeController {
         return Result.success(employeeLoginVO);
     }
 
+
     /**
      * 退出
      *
@@ -83,6 +85,7 @@ public class EmployeeController {
     public Result<String> logout() {
         return Result.success();
     }
+
 
     /**
      * 新建员工
@@ -97,6 +100,7 @@ public class EmployeeController {
         return Result.success();
     }
 
+
     /*
      * 员工信息分页查询
      */
@@ -107,6 +111,7 @@ public class EmployeeController {
         PageResult pageResult = employeeService.pageQuery(employeePageQueryDTO);
         return Result.success(pageResult);
     }
+
 
     /**
      * 启用或禁用员工账号
@@ -122,6 +127,38 @@ public class EmployeeController {
         employeeService.startOrStop(status, id);
 
         // 返回操作成功的结果
+        return Result.success();
+    }
+
+
+    /**
+     * 根据id查询数据
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping("/{id}")
+    @ApiOperation("根据id查询员工")
+    //@PathVariable Long id: 表示从请求路径中获取 id 参数，例如 /employees/123 中的 123 会作为 id 传入。
+    public Result<Employee> getById(@PathVariable Long id) {
+        log.info("根据id查询员工：{}", id);
+        Employee employee = employeeService.getById(id);
+        return Result.success(employee);
+    }
+
+    /**
+     * 修改员工信息
+     *
+     * @param employeeDTO
+     * @return
+     */
+    @PutMapping
+    @ApiOperation("修改员工信息")
+    public Result update(@RequestBody EmployeeDTO employeeDTO) {
+        // 方法的参数通过 @RequestBody 注解绑定，表示从请求体中接收 JSON 格式的数据并转换为 EmployeeDTO 对象
+        // EmployeeDTO 是一个数据传输对象（Data Transfer Object），通常用于接收前端传递的员工信息
+        log.info("修改员工信息：{}", employeeDTO);
+        employeeService.update(employeeDTO);
         return Result.success();
     }
 

@@ -1,30 +1,57 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- 定义 MyBatis 的 Mapper 文件，用于与数据库交互 -->
 <mapper namespace="com.sky.mapper.EmployeeMapper">
+    <!-- 命名空间 namespace 对应 Mapper 接口类 com.sky.mapper.EmployeeMapper -->
+
+    <!-- 定义一个 update 操作，用于动态更新员工表中的数据 -->
     <update id="update" parameterType="employee">
-        update employee
-        <set>
+        <!-- 参数类型 parameterType 为 employee 对象，代表从代码传入的参数类型 -->
+
+        update employee <!-- 指定要更新的表为 employee -->
+        <set> <!-- 动态生成 SET 子句 -->
+            <!-- 根据条件判断是否需要更新 username 字段 -->
             <if test="username != null and username != ''">username = #{username},</if>
+            <!-- 判断 name 是否非空，动态生成 name 的更新语句 -->
             <if test="name != null and name != ''">name = #{name},</if>
+            <!-- 判断 password 是否非空，动态生成 password 的更新语句 -->
             <if test="password != null and password != ''">password = #{password},</if>
+            <!-- 判断 phone 是否非空，动态生成 phone 的更新语句 -->
             <if test="phone != null and phone != ''">phone = #{phone},</if>
+            <!-- 判断 sex 是否非空，动态生成 sex 的更新语句 -->
             <if test="sex != null and sex != ''">sex = #{sex},</if>
+            <!-- 判断 idNumber 是否非空，动态生成 id_number 的更新语句 -->
             <if test="idNumber != null and idNumber != ''">id_number = #{id}</if>
+            <!-- 判断 status 是否非空，动态生成 status 的更新语句 -->
             <if test="status != null">status = #{status},</if>
+            <!-- 判断 updateTime 是否非空，动态生成 update_time 的更新语句 -->
             <if test="updateTime != null">update_time = #{updateTime},</if>
+            <!-- 判断 updateUser 是否非空，动态生成 update_user 的更新语句 -->
             <if test="updateUser != null">update_user = #{updateUser},</if>
         </set>
+        <!-- 动态生成 SET 子句结束 -->
     </update>
+    <!-- update 语句结束 -->
+
+    <!-- 定义一个 select 查询操作，用于分页查询员工数据 -->
     <select id="pageQuery" resultType="com.sky.entity.Employee">
-        select * from employee
-        <where>
+        <!-- id="pageQuery" 表示 Mapper 接口中对应的方法名称 -->
+        <!-- resultType 指定查询结果对应的实体类 com.sky.entity.Employee -->
+
+        select * from employee <!-- 查询 employee 表中的所有字段 -->
+        <where> <!-- 动态生成 WHERE 子句 -->
+            <!-- 如果传入的 name 参数非空，则生成模糊查询条件 -->
             <if test="name != null and name != ''">
-                # 模糊查询，姓名包含name的数据
+                <!-- 使用 concat 拼接模糊查询的字符串，查找 name 包含指定值的记录 -->
                 and name like concat('%',#{name},'%')
             </if>
         </where>
-        order by create_time desc
+        <!-- WHERE 子句结束 -->
+
+        order by create_time desc <!-- 按 create_time 降序排列 -->
     </select>
+    <!-- select 查询语句结束 -->
 
 </mapper>
+<!-- Mapper 配置文件结束 -->
