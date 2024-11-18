@@ -93,8 +93,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         //设置当前记录——创建人id和修改人id
         // 后续需要改为当前登录用户的id
         //从ThreadLocal中取出当前线程的empID
-        employee.setCreateUser(BaseContext.getCurrentId());
-        employee.setUpdateUser(BaseContext.getCurrentId());
+        //employee.setCreateUser(BaseContext.getCurrentId());
+        //employee.setUpdateUser(BaseContext.getCurrentId());
 
         //调用Mapper层
         employeeMapper.insert(employee);
@@ -170,11 +170,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         //对象属性拷贝
         BeanUtils.copyProperties(employeeDTO, employee);
         //设置修改时间
-        employee.setUpdateTime(LocalDateTime.now());
+        //employee.setUpdateTime(LocalDateTime.now());
         //设置当前记录——修改人id
         // 后续需要改为当前登录用户的id
         //从ThreadLocal中取出当前线程的empID
-        employee.setUpdateUser(BaseContext.getCurrentId());
+        //employee.setUpdateUser(BaseContext.getCurrentId());
 
         //调用Mapper层
         employeeMapper.update(employee);

@@ -1,8 +1,10 @@
 package com.sky.mapper;
 
 import com.github.pagehelper.Page;
+import com.sky.annotation.AutoFill;
 import com.sky.dto.EmployeePageQueryDTO;
 import com.sky.entity.Employee;
+import com.sky.enumeration.OperationType;
 import com.sky.result.PageResult;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
@@ -19,6 +21,7 @@ public interface EmployeeMapper {
      * @param employee 包含需要更新的员工属性和主键的 Employee 对象
      *                 其中，员工 ID 会作为主键进行定位，其他非空属性将作为更新的字段。
      */
+    @AutoFill(value = OperationType.UPDATE)
     void update(Employee employee);
 
 
@@ -40,6 +43,7 @@ public interface EmployeeMapper {
     @Insert("insert into employee (name, username, password, phone, sex, id_number, create_time, update_time, create_user, update_user)" +
             "values" +
             "(#{name},#{username}, #{password}, #{phone}, #{sex}, #{idNumber}, #{createTime}, #{updateTime}, #{createUser}, #{updateUser})")
+    @AutoFill(value = OperationType.INSERT)
     void insert(Employee employee);
 
 
