@@ -14,12 +14,29 @@ spring:
       password: ${sky.datasource.password}
 
 mybatis:
-  #mapper配置文件
+  # 配置 MyBatis 的相关设置
+  # Mapper 配置文件位置
   mapper-locations: classpath:mapper/*.xml
+  # 说明：指定 MyBatis 的 Mapper XML 文件所在的位置。
+  #       "classpath:" 表示资源路径从项目的类路径下开始。
+  #       这里使用通配符 "*.xml"，表示加载 `mapper` 文件夹下的所有 `.xml` 文件。
+  #       这些文件用于定义 SQL 映射和操作。
+
+  # 实体类所在包
   type-aliases-package: com.sky.entity
+  # 说明：设置实体类的所在包路径。
+  #       MyBatis 会自动扫描这个包下的类，并为其注册别名（默认是类名首字母小写）。
+  #       别名可以简化 XML 中引用实体类的写法。
+  #       例如：实体类 `com.sky.entity.Employee` 的别名是 `employee`。
+
   configuration:
-    #开启驼峰命名
+    # 开启驼峰命名转换
     map-underscore-to-camel-case: true
+    # 说明：将数据库中的字段名自动转换为 Java 属性的驼峰命名形式。
+    #       例如：
+    #       - 数据库字段 `user_name` 会自动映射到 Java 属性 `userName`。
+    #       - 这样就不需要手动指定字段和属性的映射关系了。
+
 
 logging:
   level:

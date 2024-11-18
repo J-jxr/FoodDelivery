@@ -91,7 +91,7 @@ public class EmployeeController {
      */
     @PostMapping
     @ApiOperation("新增员工")
-    public Result save(@RequestBody EmployeeDTO employeeDTO){
+    public Result save(@RequestBody EmployeeDTO employeeDTO) {
         log.info("新增员工：{}", employeeDTO);
         employeeService.save(employeeDTO);
         return Result.success();
@@ -102,13 +102,28 @@ public class EmployeeController {
      */
     @GetMapping("/page")
     @ApiOperation("员工分页查询")
-    public Result<PageResult> page(EmployeePageQueryDTO employeePageQueryDTO){
+    public Result<PageResult> page(EmployeePageQueryDTO employeePageQueryDTO) {
         log.info("员工分页查询，参数为：{}", employeePageQueryDTO);
         PageResult pageResult = employeeService.pageQuery(employeePageQueryDTO);
         return Result.success(pageResult);
     }
 
+    /**
+     * 启用或禁用员工账号
+     * 该接口通过传递员工状态和员工 ID 来实现员工账号的启用或禁用功能。
+     */
+    @PostMapping("/status/{status}")
+    @ApiOperation("启用禁用员工账号")
+    public Result startOrStop(@PathVariable Integer status, Long id) {
+        // 日志记录，输出操作信息：状态和员工 ID
+        log.info("启用禁用员工账号，状态：{}，员工id：{}", status, id);
 
+        // 调用服务层方法，根据状态和员工 ID 处理账号启用或禁用逻辑
+        employeeService.startOrStop(status, id);
+
+        // 返回操作成功的结果
+        return Result.success();
+    }
 
 
 }

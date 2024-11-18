@@ -99,6 +99,12 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeMapper.insert(employee);
     }
 
+    /**
+     * 员工分页查询
+     *
+     * @param employeePageQueryDTO
+     * @return
+     */
     @Override
     public PageResult pageQuery(EmployeePageQueryDTO employeePageQueryDTO) {
         PageHelper.startPage(employeePageQueryDTO.getPage(), employeePageQueryDTO.getPageSize());
@@ -109,6 +115,28 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         return new PageResult(total, result);
 
+    }
+
+    /**
+     * 启用或禁用员工账号
+     * 该方法根据传入的状态（启用或禁用）和员工 ID，更新员工表中的状态字段。
+     *
+     * @param status 员工账号的状态，1 表示启用，0 表示禁用
+     * @param id     员工的唯一标识符，用于定位需要更新的员工记录
+     */
+    @Override
+    public void startOrStop(Integer status, Long id) {
+        // 创建一个 Employee 对象，设置其 ID 和状态
+        // 使用建造者模式创建对象：通过 id 和 status 设置员工状态
+        Employee employee = Employee.builder()
+                .id(id)          // 设置员工 ID
+                .status(status)   // 设置员工状态（启用或禁用）
+                .build();         // 构建 Employee 对象
+
+        // 调用 employeeMapper 更新数据库中的员工状态
+        // 通过传入的 Employee 对象（包含 id 和 status），执行更新操作
+        // 这里的 SQL 操作是：update employee set status = ? where id = ?
+        employeeMapper.update(employee);
     }
 
 
