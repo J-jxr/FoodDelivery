@@ -18,11 +18,12 @@ public class GlobalExceptionHandler {
 
     /**
      * 捕获业务异常
+     *
      * @param ex
      * @return
      */
     @ExceptionHandler
-    public Result exceptionHandler(BaseException ex){
+    public Result exceptionHandler(BaseException ex) {
         log.error("异常信息：{}", ex.getMessage());
         return Result.error(ex.getMessage());   //捕获到异常，返回一个Result对象，给前端页面返回一定的结果
     }
@@ -39,25 +40,38 @@ Result.error(...)：返回一个 Result 对象，Result 是一个自定义的响
 
 
     /**
-     * 处理SQL异常
-     * @param ex
-     * @return
+     * 处理 SQL 异常
+     * 该方法专门用于捕获和处理数据库操作中的 SQL 约束异常（如主键冲突、唯一键冲突等）。
+     *
+     * @param ex SQLIntegrityConstraintViolationException 异常对象，表示 SQL 约束被违反。
+     * @return Result 封装的统一响应结果对象。
      */
     @ExceptionHandler
-    public Result exceptionHandler(SQLIntegrityConstraintViolationException ex){
-        //Duplicate entry 'jiangxinrun' for key 'employee.idx_username
+    public Result exceptionHandler(SQLIntegrityConstraintViolationException ex) {
+        // 获取异常的详细信息（异常消息）
+        // 例如，可能的异常消息为： "Duplicate entry 'jiangxinrun' for key 'employee.idx_username'"
         String message = ex.getMessage();
-        if(message.contains("uplicate entry")){
+
+        // 检查异常消息中是否包含 "Duplicate entry" 字段，这表明是插入重复键值引起的异常
+        if (message.contains("uplicate entry")) {
+            // 将异常消息按照空格分割成多个部分，方便提取相关信息
             String[] split = message.split(" ");
+
+            // 提取冲突的具体值（即重复的键值，例如 'jiangxinrun'）
+            // 这里假设键值总是位于分割后数组的第 3 个位置（索引为 2）
             String username = split[2];
+
+            // 构建错误信息，将冲突的键值与预定义的错误常量（如 "已存在"）结合生成具体提示
             String msg = username + MessageConstant.ALREADY_EXISTS;
+
+            // 返回带有错误消息的统一响应对象
             return Result.error(msg);
-        }else{
+        } else {
+            // 如果异常消息不包含 "Duplicate entry"，说明是其他未知的 SQL 异常
+            // 返回通用的未知错误提示信息
             return Result.error(MessageConstant.UNKNOWN_ERROR);
         }
     }
-
-
 
 
 }
