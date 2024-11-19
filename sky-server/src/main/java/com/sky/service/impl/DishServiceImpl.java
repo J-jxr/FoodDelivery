@@ -1,5 +1,6 @@
 package com.sky.service.impl;
 
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
 import com.sky.constant.StatusConstant;
@@ -70,31 +71,24 @@ public class DishServiceImpl implements DishService {
     /**
      * 菜品分页查询
      *
-     * @param dishPageQueryDTO
-     * @return
+     * @param dishPageQueryDTO 菜品分页查询条件，包含分页参数和查询条件
+     * @return 返回分页查询结果，包含总记录数和当前页的记录列表
      */
-    @Override
     public PageResult pageQuery(DishPageQueryDTO dishPageQueryDTO) {
+        // 使用 PageHelper 开启分页功能，指定当前页码和每页显示的记录数
+        // 会自动生成带有 LIMIT 和 OFFSET 的 SQL，控制数据返回的范围,
+        // 省去我们自己计算当前页码以及每页展示数据，而直接使用框架提供的分页功能。
+        // 同时会自动拼接到SQL中，例如：SELECT * FROM dish LIMIT 5 OFFSET 10
         PageHelper.startPage(dishPageQueryDTO.getPage(), dishPageQueryDTO.getPageSize());
 
-        List<DishVO> dishVOList = dishMapper.pageQuery(dishPageQueryDTO);
+        // 调用 Mapper 层方法，执行分页查询
+        // 返回值是一个 Page 对象，包含当前页的数据列表以及分页元信息
+        Page<DishVO> page = dishMapper.pageQuery(dishPageQueryDTO);
 
-        PageResult pageResult = new PageResult();
-        pageResult.setTotal(dishVOList.size());
-        pageResult.setRecords(dishVOList);
-
-        return pageResult;
+        // 封装分页结果，将总记录数和当前页数据列表传入自定义的 PageResult 对象
+        return new PageResult(page.getTotal(), page.getResult());
     }
 
-    /**
-     * 分页查询菜品
-     *
-     * @param dishPageQueryDTO
-     */
-    // @Override
-    // public PageResult<DishVO> queryPage(DishPageQueryDTO dishPageQueryDTO) {
-    //     return null;
-    // }
 
     /**
      * 删除菜品
@@ -104,30 +98,46 @@ public class DishServiceImpl implements DishService {
     @Override
     // 事务一致性
     @Transactional
-    public void deleteBatch(Long[] ids) {
-        // 判断菜品是否被套餐关联
+    /*
+    事务是数据库操作的一个基本概念，
+    确保一组操作要么完全执行（提交），要么完全不执行（回滚）。
+    @Transactional 注解在方法或类上应用，告诉 Spring 该方法或类的所有操作都应该在一个事务内执行。
+     */
+    public void deleteBatch(List<Long> ids) {
+        // 判断当前菜品是否能够删除——是否存在起售中的菜品？
         for (Long id : ids) {
+            //遍历获得所有的菜品ID
+            // 通过菜品ID查询菜品信息
             Dish dish = dishMapper.getById(id);
-            if (Objects.equals(dish.getStatus(), StatusConstant.ENABLE)) {
-                // 正在销售的菜品不能删除
+
+            // 判断菜品的状态，
+            // 如果状态为 "正在销售" (StatusConstant.ENABLE)，则不能删除
+            if (dish.getStatus() == StatusConstant.ENABLE) {
+                // 如果菜品正在销售，抛出一个业务异常，提示无法删除正在销售的菜品
                 throw new DeletionNotAllowedException(MessageConstant.DISH_ON_SALE);
             }
         }
 
-        // 判断菜品是否被套餐关联
-        List<Long> setmealIdsByDishIds = setmealDishMapper.getSetmealIdsByDishIds(Arrays.asList(ids));
+        // 判断菜品是否能被删除——是否存在与某个套餐有所关联？
+        // 获取当前菜品关联的套餐ID列表
+        List<Long> setmealIdsByDishIds = setmealDishMapper.getSetmealIdsByDishIds(ids);
+
+        // 如果套餐ID列表不为空，说明菜品与套餐有关联
         if (setmealIdsByDishIds != null && !setmealIdsByDishIds.isEmpty()) {
-            // 菜品被套餐关联，不能删除
+            // 如果菜品被套餐关联，抛出一个业务异常，提示菜品不能被删除
             throw new DeletionNotAllowedException(MessageConstant.DISH_BE_RELATED_BY_SETMEAL);
         }
 
-        // 删除菜品表的菜品数据
+        // 如果菜品可以删除，执行删除操作
+        // 删除菜品表中的菜品数据
         for (Long id : ids) {
+            // 删除菜品数据
             dishMapper.deleteById(id);
 
-            // 删除菜品关联的口味数据
+            // 删除菜品相关的口味数据
             dishFlavorMapper.deleteByDishId(id);
         }
+
     }
 
     /**

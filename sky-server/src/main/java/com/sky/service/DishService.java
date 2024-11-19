@@ -30,7 +30,7 @@ public interface DishService {
      *
      * @param ids
      */
-    void deleteBatch(Long[] ids);
+    void deleteBatch(List<Long> ids);
 
     /**
      * 根据id查询菜品和对应的口味数据

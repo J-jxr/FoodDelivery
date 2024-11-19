@@ -10,7 +10,10 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
+/*
+DishVO 是用于封装菜品详细信息的类，主要用于后端查询并返回给前端。
+它将菜品的基本信息、分类名称和口味信息整合为一个对象，方便数据的展示和传递
+ */
 @Data
 @Builder
 @NoArgsConstructor
@@ -32,7 +35,7 @@ public class DishVO implements Serializable {
     private Integer status;
     //更新时间
     private LocalDateTime updateTime;
-    //分类名称
+    //分类名称————这个是根据多表查询，同时查询dish表和category表，获得的
     private String categoryName;
     //菜品关联的口味
     private List<DishFlavor> flavors = new ArrayList<>();

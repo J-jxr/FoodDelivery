@@ -59,6 +59,12 @@ public class DishController {
      */
     @GetMapping("/page")
     @ApiOperation("菜品分页查询")
+    /*
+    方法的参数类型如果是一个 JavaBean（即一个普通的对象，比如 DishPageQueryDTO），
+    并且这个对象的属性与请求参数的名称匹配，Spring 会自动将请求参数绑定到该对象的相应字段。
+    DishPageQueryDTO 对象本身就能通过 Spring 的数据绑定机制（基于 JavaBean 的 getter/setter 方法）来自动填充请求参数，
+    所以你不需要显式地使用 @RequestParam 注解。
+     */
     public Result<PageResult> page(DishPageQueryDTO dishPageQueryDTO) {
         log.info("菜品分页查询：{}", dishPageQueryDTO); // 记录日志
         dishPageQueryDTO.setPageSize(100000); // 设置每页记录数为 100000，暂时无分页限制
@@ -88,7 +94,12 @@ public class DishController {
      */
     @DeleteMapping
     @ApiOperation("删除菜品")
-    public Result delete(@RequestParam Long[] ids) {
+    /*
+    @RequestParam 的作用是从 HTTP 请求中获取名为 ids 的参数（可能是多个菜品 ID），
+    并将这些值绑定到方法的 Long[] ids 参数上，进行批量删除操作
+     */
+    public Result delete(@RequestParam List<Long> ids) {
+        log.info("菜品批量删除：{}", ids);
         dishService.deleteBatch(ids); // 调用服务层方法批量删除菜品
 
         // 清理 Redis 缓存中与菜品相关的所有数据
