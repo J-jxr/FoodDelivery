@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.mapper.DishFlavorMapper">
+
+    <insert id="insertBatch">
+    <!-- 向 dish_flavor 表中批量插入多条记录 -->
+    insert into dish_flavor (
+        dish_id,  <!-- 菜品 ID，表示每条口味记录所属的菜品 -->
+        name,     <!-- 口味名称，如“辣味”、“甜味”等 -->
+        value     <!-- 口味的具体值，通常是一个 JSON 字符串，表示该口味的详细信息 -->
+    ) VALUES
+    <foreach collection="flavors" item="df" separator=",">
+        <!-- 遍历 flavors 集合，将每个元素的字段值插入到 SQL 中 -->
+        (#{df.dishId}, #{df.name}, #{df.value})
+    </foreach>
+</insert>
+
+</mapper>

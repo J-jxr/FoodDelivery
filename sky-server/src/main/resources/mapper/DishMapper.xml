@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.mapper.DishMapper">
+
+    <!--useGeneratedKeys="true"：
+            启用自动生成主键的功能。
+            数据库插入成功后，MyBatis 会自动将生成的主键值回填到实体类的 id 属性中。
+        keyProperty="id"：
+            指定实体类中用于接收自动生成主键的属性名称，这里是 id-->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+    <!-- 插入到 dish 表中，将菜品的各项属性插入对应的列 -->
+    insert into dish (
+        name,          <!-- 菜品名称 -->
+        category_id,   <!-- 菜品所属分类的 ID -->
+        price,         <!-- 菜品价格 -->
+        image,         <!-- 菜品图片的 URL -->
+        description,   <!-- 菜品描述 -->
+        create_time,   <!-- 创建时间 -->
+        update_time,   <!-- 最后更新时间 -->
+        create_user,   <!-- 创建者的用户 ID -->
+        update_user,   <!-- 最后更新者的用户 ID -->
+        status         <!-- 菜品状态（如 1 表示启用，0 表示停用） -->
+    )
+    values (
+        #{name},        <!-- 从实体类中获取 name 属性的值 -->
+        #{categoryId},  <!-- 从实体类中获取 categoryId 属性的值 -->
+        #{price},       <!-- 从实体类中获取 price 属性的值 -->
+        #{image},       <!-- 从实体类中获取 image 属性的值 -->
+        #{description}, <!-- 从实体类中获取 description 属性的值 -->
+        #{createTime},  <!-- 从实体类中获取 createTime 属性的值 -->
+        #{updateTime},  <!-- 从实体类中获取 updateTime 属性的值 -->
+        #{createUser},  <!-- 从实体类中获取 createUser 属性的值 -->
+        #{updateUser},  <!-- 从实体类中获取 updateUser 属性的值 -->
+        #{status}       <!-- 从实体类中获取 status 属性的值 -->
+    )
+</insert>
+
+
+    <select id="pageQuery" resultType="com.sky.vo.DishVO">
+        select d.* , c.name as categoryName from dish d left outer join category c on d.category_id = c.id
+        <where>
+            <if test="name != null">
+                and d.name like concat('%',#{name},'%')
+            </if>
+            <if test="categoryId != null">
+                and d.category_id = #{categoryId}
+            </if>
+            <if test="status != null">
+                and d.status = #{status}
+            </if>
+        </where>
+        order by d.create_time desc
+    </select>
+
+    <update id="update">
+        update dish
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="categoryId != null">category_id = #{categoryId},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="image != null">image = #{image},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="updateUser != null">update_user = #{updateUser},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="list" resultType="Dish" parameterType="Dish">
+        select * from dish
+        <where>
+            <if test="name != null">
+                and name like concat('%',#{name},'%')
+            </if>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="countByMap" resultType="java.lang.Integer">
+        select count(id) from dish
+        <where>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+        </where>
+    </select>
+</mapper>
