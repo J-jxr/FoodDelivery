@@ -130,62 +130,100 @@ public class DishServiceImpl implements DishService {
 
         // 如果菜品可以删除，执行删除操作
         // 删除菜品表中的菜品数据
-        for (Long id : ids) {
-            // 删除菜品数据
-            dishMapper.deleteById(id);
+//        for (Long id : ids) {
+//            // 删除菜品数据
+//            dishMapper.deleteById(id);
+//
+//            // 删除菜品相关的口味数据
+//            dishFlavorMapper.deleteByDishId(id);
+//        }
 
-            // 删除菜品相关的口味数据
-            dishFlavorMapper.deleteByDishId(id);
-        }
+
+        // 每for循环遍历一次，就会执行两条SQL，如果数量过多，可能就会引起一些性能上的问题。
+        // sql: DELETE FROM dish WHERE id in (?, ?, ?)
+        log.info("批量删除菜品， dishIds: {}", ids);
+        //根据菜品ID集合批量删除菜品数据
+        dishMapper.deleteByIds(ids);
+        //根据菜品ID集合批量删除口味数据
+        dishFlavorMapper.deleteByDishIds(ids);
 
     }
 
     /**
-     * 根据id查询菜品
+     * 根据菜品 ID 查询指定菜品的详细信息（包括口味信息）。
+     * <p>
+     * 该方法根据菜品 ID 查询数据库中的菜品信息，并从菜品的口味表中获取该菜品的所有口味数据。
+     * 如果查询到对应的菜品数据，将会返回一个包含菜品信息及其口味信息的 DishVO 对象。
      *
-     * @param id
-     * @return
+     * @param id 菜品的唯一标识符，表示要查询的菜品的 ID
+     * @return 查询结果，返回一个 DishVO 对象，包含菜品详细信息以及对应的口味信息
      */
     @Override
     public DishVO getByIdWithFlavor(Long id) {
+        // 1. 先根据菜品ID查询菜品信息
+        // 根据菜品 ID 从数据库中查询菜品基本信息
         Dish dish = dishMapper.getById(id);
+
+        // 创建一个 DishVO 对象，用于封装返回的结果
         DishVO dishVO = new DishVO();
 
+        // 如果菜品存在，则将菜品信息复制到 dishVO 中
         if (dish != null) {
-            BeanUtils.copyProperties(dish, dishVO);
-            // 查询菜品对应的口味数据，从dish_flavor表查询
+            BeanUtils.copyProperties(dish, dishVO); // 将菜品基本信息复制到 dishVO
+
+            // 2. 再根据菜品ID查询口味信息
+            // 查询菜品对应的口味数据
+            // 从 dish_flavor 表中根据菜品 ID 查询菜品的口味列表
             List<DishFlavor> flavors = dishFlavorMapper.getByDishId(id);
+
+            // 将查询到的口味列表设置到 dishVO 的 flavors 属性中
             dishVO.setFlavors(flavors);
         }
 
+        // 返回封装好的菜品信息和口味信息
         return dishVO;
     }
 
+
     /**
-     * 更新菜品以及口味
+     * 更新菜品信息及其口味数据。
+     * <p>
+     * 该方法首先更新菜品表中的基本信息，然后根据菜品的 ID 删除原有的口味数据，
+     * 接着批量插入新的口味数据，确保菜品及其口味信息的更新操作同时完成。
      *
-     * @param dishDTO
+     * @param dishDTO 包含菜品和口味信息的数据传输对象，包含了更新的菜品基本信息和口味数据
      */
     @Override
     public void updateWithFlavor(DishDTO dishDTO) {
+        // 创建 Dish 对象，将 DishDTO 中的基本信息复制到 Dish 对象中
         Dish dish = new Dish();
-        BeanUtils.copyProperties(dishDTO, dish);
+        BeanUtils.copyProperties(dishDTO, dish); // 使用 BeanUtils 复制属性
 
-        // 修改菜品表基本信息
-        dishMapper.update(dish);
+        //  1. 更新第一张表——菜品表
+        // 更新菜品表中的基本信息
+        dishMapper.update(dish); // 调用菜品映射器更新菜品信息
 
-        // 删除原有口味数据
-        dishFlavorMapper.deleteByDishId(dish.getId());
+        //  2. 删除与该菜品 ID 关联的原有口味数据
+        // 这一步是为了保证口味数据的一致性，防止旧数据残留
+        dishFlavorMapper.deleteByDishId(dish.getId()); // 删除原有口味数据
 
+        //  3. 获取传入的新的口味数据
         List<DishFlavor> flavors = dishDTO.getFlavors();
+
+        // 如果口味数据不为空，批量插入新的口味数据
         if (flavors != null && !flavors.isEmpty()) {
-            // 批量插入n条数据
+            //   4. 遍历每个口味对象，设置菜品 ID，确保口味与正确的菜品关联
+            //      因为前端其实并没有把菜品ID传过来，只是传入口味名称以及描述信息，所以需要手动设置菜品ID
             flavors.forEach(flavor -> {
-                flavor.setDishId(dish.getId());
+                flavor.setDishId(dish.getId()); // 设置口味的菜品 ID
             });
-            dishFlavorMapper.insertBatch(flavors);
+
+            //获取到口味关联的菜品ID以后，批量插入dish_flavor表中
+            //   5. 批量插入新的口味数据到 dish_flavor 表
+            dishFlavorMapper.insertBatch(flavors); // 插入口味数据
         }
     }
+
 
     /**
      * 启用或禁用菜品

@@ -113,35 +113,42 @@ public class DishController {
 
     /**
      * 根据菜品 ID 查询指定菜品的详细信息（包括口味）。
+     * <p>
+     * 该方法根据传入的菜品 ID 查询数据库中的菜品详细信息，返回的结果不仅包括菜品本身的信息，
+     * 还包含与该菜品相关联的口味信息。
      *
-     * @param id 菜品 ID
-     * @return 查询结果，包含菜品详细信息和其关联的口味
+     * @param id 菜品 ID，唯一标识一个菜品
+     * @return 查询结果，包含菜品详细信息及其关联的口味信息
      */
     @GetMapping("/{id}")
     @ApiOperation("根据ID查询指定菜品")
-    public Result<DishVO> getByIdWithFlavor(@PathVariable Long id) {
-        log.info("根据ID查询指定菜品：{}", id); // 记录日志
-        return Result.success(dishService.getByIdWithFlavor(id)); // 调用服务层方法查询菜品详细信息
+    public Result<DishVO> getByIdWithFlavor(@PathVariable Long id) {  //路径参数+@PathVariable
+        log.info("根据ID查询指定菜品：{}", id); // 记录查询菜品的 ID 日志
+        return Result.success(dishService.getByIdWithFlavor(id)); // 调用服务层方法查询菜品详细信息，并返回成功结果
     }
 
     /**
-     * 更新菜品信息。
+     * 更新菜品信息，包括菜品本身的信息和菜品的口味信息。
+     * <p>
+     * 该方法用于更新菜品的信息，首先会删除与该分类相关的 Redis 缓存数据，
+     * 然后更新数据库中的菜品及其口味信息。更新操作完成后，会返回一个操作成功的结果。
      *
-     * @param dishDTO 菜品数据传输对象，包含菜品和口味信息
-     * @return 操作结果
+     * @param dishDTO 菜品数据传输对象，包含菜品的基本信息和口味信息
+     * @return 操作结果，表示更新操作是否成功
      */
     @PutMapping
     @ApiOperation("更新菜品信息")
     public Result update(@RequestBody DishDTO dishDTO) {
-        log.info("更新菜品信息：{}", dishDTO); // 记录日志
+        log.info("更新菜品信息：{}", dishDTO); // 记录更新的菜品信息日志
 
-        // 删除与该分类相关的 Redis 缓存数据
+        // 删除与该分类相关的 Redis 缓存数据，确保数据的一致性
         String key = "dish_" + dishDTO.getCategoryId();
-        redisTemplate.delete(key);
+        redisTemplate.delete(key); // 删除缓存，防止返回过时的数据
 
-        dishService.updateWithFlavor(dishDTO); // 调用服务层方法更新菜品和其口味信息
+        dishService.updateWithFlavor(dishDTO); // 调用服务层方法更新菜品及口味信息
         return Result.success(); // 返回成功结果
     }
+
 
     /**
      * 根据分类 ID 查询菜品列表。
