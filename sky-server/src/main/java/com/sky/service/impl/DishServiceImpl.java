@@ -237,15 +237,29 @@ public class DishServiceImpl implements DishService {
     }
 
     /**
-     * 根据分类id查询菜品
+     * 根据分类 ID 查询菜品列表。
+     * <p>
+     * 该方法创建一个 Dish 对象作为查询条件，条件包括：
+     * 1. 菜品的分类 ID 必须匹配传入的 `categoryId`。
+     * 2. 菜品的状态必须是启用状态（`StatusConstant.ENABLE`）。
+     * <p>
+     * 然后，调用 `dishMapper.list(dish)` 方法查询符合条件的所有菜品，并返回查询结果。
      *
-     * @param categoryId
-     * @return
+     * @param categoryId 菜品分类 ID，用于筛选属于指定分类的菜品
+     * @return 返回符合条件的菜品列表
      */
-    @Override
     public List<Dish> list(Long categoryId) {
-        return dishMapper.getListById(categoryId);
+        // 使用构建器模式创建一个 Dish 对象，作为查询条件_____首先ID必须是我传入的categoryID，其次菜品必须是启售的状态
+        // 该对象的分类 ID 被设置为传入的 categoryId，状态设置为启用状态
+        Dish dish = Dish.builder()
+                .categoryId(categoryId)  // 设置菜品的分类 ID
+                .status(StatusConstant.ENABLE)  // 设置菜品的状态为启用
+                .build();  // 构建一个 Dish 对象
+
+        // 调用 dishMapper 的 list 方法，根据指定条件查询菜品并返回结果
+        return dishMapper.list(dish);  // 返回符合条件的菜品列表
     }
+
 
     /**
      * 条件查询菜品和口味

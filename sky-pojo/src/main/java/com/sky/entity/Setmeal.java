@@ -47,3 +47,7 @@ public class Setmeal implements Serializable {
 
     private Long updateUser;
 }
+
+//Setmeal实体类中，不同于SetmealDTO，没有setmealDishes属性，
+//因为Setmeal实体类是直接从数据库中查询出来的，而SetmealDTO是前端发送过来的，
+//所以Setmeal套餐表不需要setmealDishes属性。
