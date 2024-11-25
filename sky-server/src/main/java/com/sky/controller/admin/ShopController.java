@@ -40,7 +40,7 @@ public class ShopController {
      * @return 返回操作成功的结果
      */
     @PutMapping("/{status}")
-    @ApiOperation("管理端设置店铺的营业状态") // Swagger注解，描述这个接口的功能
+    @ApiOperation("设置店铺的营业状态") // Swagger注解，描述这个接口的功能
     public Result setStatus(@PathVariable Integer status) {
         // 打印日志，记录当前状态变化
         log.info("设置店铺的营业状态为：{}", status == 1 ? "营业中" : "打烊中");

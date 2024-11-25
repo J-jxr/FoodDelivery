@@ -72,6 +72,10 @@ public interface SetmealMapper {
      * @param setmeal
      * @return
      */
+    /*
+    如果 SQL 查询返回的是多条记录（即多个符合条件的行），
+    MyBatis 会根据你的返回类型（比如 List<YourEntity>）将这些记录封装为一个 List 集合。
+     */
     List<Setmeal> list(Setmeal setmeal);
 
     /**
@@ -83,7 +87,7 @@ public interface SetmealMapper {
             "from setmeal_dish sd left join dish d on sd.dish_id = d.id " +
             "where sd.setmeal_id = #{setmealId}")
     List<DishItemVO> getDishItemBySetmealId(Long setmealId);
-
+   /* MyBatis 会自动将查询结果映射到 DishItemVO 的字段。
     /**
      * 根据条件统计套餐数量
      * @param map

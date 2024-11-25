@@ -53,18 +53,39 @@ logging:
 
 sky:
   jwt:
-    # 设置jwt签名加密时使用的秘钥
+    # 设置管理端生成 JWT 签名时使用的密钥，确保密钥保密性，用于签名和验证 JWT 的合法性
     admin-secret-key: itcast
-    # 设置jwt过期时间
+    # 设置管理端生成的 JWT 令牌有效时间，单位为毫秒（7200000 毫秒 = 2 小时）
     admin-ttl: 7200000
-    # 设置前端传递过来的令牌名称
+    # 设置管理端前端传递 JWT 令牌时所使用的请求头名称，通常是 "Authorization" 或自定义名称
     admin-token-name: token
+
+    # ---------------------------------------------------------------------------
+
+    # 设置用户端生成 JWT 签名时使用的密钥，作用与 admin-secret-key 类似
+    user-secret-key: itcast
+    # 设置用户端生成的 JWT 令牌有效时间，单位为毫秒（7200000 毫秒 = 2 小时）
+    user-ttl: 7200000
+    # 设置用户端前端传递 JWT 令牌时所使用的请求头名称
+    user-token-name: authentication
+
   alioss:
+    # 设置阿里云对象存储（OSS）的服务域名，使用占位符加载具体值
     endpoint: ${sky.alioss.endpoint}
+    # 设置阿里云对象存储的访问密钥 ID，使用占位符加载具体值
     access-key: ${sky.alioss.access-key}
+    # 设置阿里云对象存储的访问密钥 Secret，使用占位符加载具体值
     secret-key: ${sky.alioss.secret-key}
+    # 设置阿里云对象存储的存储桶名称，使用占位符加载具体值
     bucket-name: ${sky.alioss.bucket-name}
 
+  wechat:
+    # 设置微信小程序的 App ID，使用占位符加载具体值
+    appid: ${sky.wechat.app-id}
+    # 设置微信小程序的 App Secret，用于接口访问时的身份验证，使用占位符加载具体值
+    secret: ${sky.wechat.app-secret}
+
+# 使用占位符（${}）标记的值通常来自环境变量或其他配置文件，便于在不同环境（开发、测试、生产）中灵活调整。
 
 
 
