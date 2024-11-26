@@ -48,6 +48,11 @@ public class DishController {
     public Result save(@RequestBody DishDTO dishDTO) {
         log.info("新增菜品：{}", dishDTO); // 记录日志
         dishService.saveWithFlavor(dishDTO); // 调用服务层保存菜品和其口味信息
+
+        String key = "dish_" + dishDTO.getCategoryId();
+        clearCache(key);
+
+
         return Result.success(); // 返回成功结果
     }
 
@@ -82,18 +87,18 @@ public class DishController {
     public Result<String> startOrStop(@PathVariable Integer status, Long id) {
         log.info("启用或停用菜品：{}", id); // 记录日志
         dishService.startOrStop(status, id); // 调用服务层方法启用或停用菜品
-        clearRedis("dish_*"); // 清理 Redis 缓存中与菜品相关的所有数据
+        clearCache("dish_*"); // 清理 Redis 缓存中与菜品相关的所有数据
         return Result.success(); // 返回成功结果
     }
 
     /**
-     * 删除菜品。
+     * 批量删除菜品。
      *
      * @param ids 要删除的菜品 ID 列表
      * @return 操作结果
      */
     @DeleteMapping
-    @ApiOperation("删除菜品")
+    @ApiOperation("批量删除菜品")
     /*
     @RequestParam 的作用是从 HTTP 请求中获取名为 ids 的参数（可能是多个菜品 ID），
     并将这些值绑定到方法的 Long[] ids 参数上，进行批量删除操作
@@ -102,8 +107,9 @@ public class DishController {
         log.info("菜品批量删除：{}", ids);
         dishService.deleteBatch(ids); // 调用服务层方法批量删除菜品
 
-        // 清理 Redis 缓存中与菜品相关的所有数据
-        Set keys = redisTemplate.keys("dish_*");
+        // 将所有的菜品缓存数据清理掉，所有以dish_开头的key
+        // 获取所有符合模式 "dish_*" 的键（即以 "dish_" 开头的所有键）
+        Set<String> keys = redisTemplate.keys("dish_*");
         if (keys != null) {
             redisTemplate.delete(keys);
         }
@@ -141,9 +147,16 @@ public class DishController {
     public Result update(@RequestBody DishDTO dishDTO) {
         log.info("更新菜品信息：{}", dishDTO); // 记录更新的菜品信息日志
 
-        // 删除与该分类相关的 Redis 缓存数据，确保数据的一致性
-        String key = "dish_" + dishDTO.getCategoryId();
-        redisTemplate.delete(key); // 删除缓存，防止返回过时的数据
+        // 将所有的菜品缓存数据清理掉，所有以dish_开头的key
+        // 获取所有符合模式 "dish_*" 的键（即以 "dish_" 开头的所有键）
+        Set<String> keys = redisTemplate.keys("dish_*");
+        if (keys != null) {
+            redisTemplate.delete(keys);
+        }
+
+        /*
+        clearCache("dish_*");
+         */
 
         dishService.updateWithFlavor(dishDTO); // 调用服务层方法更新菜品及口味信息
         return Result.success(); // 返回成功结果
@@ -163,12 +176,12 @@ public class DishController {
     }
 
     /**
-     * 清理 Redis 缓存中与菜品相关的数据。
+     * 统一清理 Redis 缓存中与菜品相关的所有数据。
      *
-     * @param keys Redis 缓存键的通配符
+     * @param
      */
-    private void clearRedis(String keys) {
-        Set<String> cacheKeys = redisTemplate.keys(keys); // 获取匹配的 Redis 缓存键集合
+    private void clearCache(String pattern) {
+        Set<String> cacheKeys = redisTemplate.keys(pattern); // 获取匹配的 Redis 缓存键集合
         redisTemplate.delete(cacheKeys); // 删除对应的缓存数据
     }
 }
