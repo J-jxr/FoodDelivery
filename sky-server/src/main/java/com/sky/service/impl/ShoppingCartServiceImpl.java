@@ -100,6 +100,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
      */
     @Override
     public List<ShoppingCart> showShoppingCart() {
+        //其实说白了就是根据userid查询当前用户的购物车中的所有商品
         return shoppingCartMapper.list(ShoppingCart.builder().userId(BaseContext.getCurrentId()).build());
     }
 
@@ -108,6 +109,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
      */
     @Override
     public void cleanShoppingCart() {
+        //不用提交任何参数，直接从当前请求的请求头中获取jwt令牌，然后从中解析出userid，保存在线程上下文中，然后根据userid清空当前用户的购物车
         shoppingCartMapper.deleteByUserId(BaseContext.getCurrentId());
     }
 

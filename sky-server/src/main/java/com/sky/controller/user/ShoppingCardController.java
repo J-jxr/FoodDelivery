@@ -1,6 +1,7 @@
 package com.sky.controller.user;
 
 import com.sky.dto.ShoppingCartDTO;
+import com.sky.entity.ShoppingCart;
 import com.sky.result.Result;
 import com.sky.service.ShoppingCartService;
 import io.swagger.annotations.Api;
@@ -8,6 +9,8 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/user/shoppingCart")
@@ -31,12 +34,21 @@ public class ShoppingCardController {
         return Result.success();
     }
 
+    /**
+     * 查看购物车，
+     * @return
+     */
     @GetMapping("list")
     @ApiOperation("查看购物车")
-    public Result list() {
+    public Result<List<ShoppingCart>> list() {
         return Result.success(shoppingCartService.showShoppingCart());
     }
 
+
+    /**
+     * 清空购物车
+     * @return
+     */
     @DeleteMapping("/delete")
     @ApiOperation("清空购物车")
     public Result delete() {

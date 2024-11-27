@@ -15,53 +15,69 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * JWT令牌校验拦截器。
- * 1. 校验请求中的JWT令牌是否合法。
- * 2. 如果合法，将用户ID存入线程上下文，供后续业务使用。
- * 3. 如果令牌无效，返回401，拒绝请求继续进入Controller。
+ * jwt令牌校验的拦截器
  */
 @Component
 @Slf4j
 public class JwtTokenUserInterceptor implements HandlerInterceptor {
 
     @Autowired
-    private JwtProperties jwtProperties; // JWT配置
+    private JwtProperties jwtProperties;
 
     /**
-     * 在请求到达Controller之前校验JWT令牌。
+     * 校验jwt
      *
-     * @param request  客户端请求
-     * @param response 服务端响应
-     * @param handler  请求目标处理器（Controller方法或其他）
-     * @return true表示校验通过，继续处理请求；false表示校验失败，阻止请求
-     * @throws Exception 校验过程中发生异常
+     * @param request
+     * @param response
+     * @param handler
+     * @return
+     * @throws Exception
      */
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        // 排除非Controller请求
+        // 判断当前拦截到的请求是否是 Controller 的方法
+        // 如果 handler 不是一个 HandlerMethod 实例，则表示拦截的可能是静态资源或其他非动态请求
         if (!(handler instanceof HandlerMethod)) {
+            // 当前拦截到的不是动态方法，直接放行
             return true;
         }
 
-        // 获取请求中的JWT令牌
+        // 1. 从请求头中获取令牌（Token）
+        // 获取令牌的名称,   从配置文件的 `jwtProperties` 中读取，通常存储在请求头中
         String token = request.getHeader(jwtProperties.getUserTokenName());
 
+        // 2. 校验令牌的合法性
         try {
-            // 校验并解析JWT令牌
+            // 打印日志记录收到的令牌
+            log.info("jwt校验:{}", token);
+
+            // 使用工具类 `JwtUtil` 对令牌进行解析，验证其合法性
+            /*
+            使用工具类 JwtUtil 验证令牌，传入密钥 jwtProperties.getUserSecretKey() 和令牌。
+            如果令牌有效，会返回解析后的 Claims，其中包含了用户的相关信息（如用户ID）。
+             */
             Claims claims = JwtUtil.parseJWT(jwtProperties.getUserSecretKey(), token);
 
-            // 从JWT中获取用户ID
+            // 从解析后的 `Claims` 中获取用户ID
             Long userId = Long.valueOf(claims.get(JwtClaimsConstant.USER_ID).toString());
 
-            // 存储用户ID到线程上下文
+            // 将当前登录用户的ID存储到线程上下文中
+            // 线程上下文可以在后续业务逻辑中随时获取用户ID，避免频繁解析令牌
             BaseContext.setCurrentId(userId);
 
-            // 校验通过，放行请求
-            return true;
+            // 打印日志记录当前用户ID
+            log.info("当前用户id：{}", userId);
 
+            // 3. 校验通过，放行
+            return true;
         } catch (Exception ex) {
-            // 校验失败，返回401状态码
+            // 如果校验失败，捕获异常并进行处理
+
+            // 4. 校验不通过，设置 HTTP 响应状态码为 401（未授权）
             response.setStatus(401);
+
+            // 返回 false，表示拦截请求，不再继续执行后续逻辑
             return false;
         }
     }
+
 }
