@@ -172,6 +172,8 @@ public class WeChatPayUtil {
 
         String prepayId = jsonObject.getString("prepay_id");
         if (prepayId != null) {
+
+            //对数据进行加密、签名处理。
             String timeStamp = String.valueOf(System.currentTimeMillis() / 1000);
             String nonceStr = RandomStringUtils.randomNumeric(32);
             ArrayList<Object> list = new ArrayList<>();
