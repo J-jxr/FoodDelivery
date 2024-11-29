@@ -34,7 +34,7 @@ public class AddressBookServiceImpl implements AddressBookService {
      */
     public void save(AddressBook addressBook) {
         addressBook.setUserId(BaseContext.getCurrentId());
-        addressBook.setIsDefault(0);
+        addressBook.setIsDefault(0);   //新增的地址都不是默认地址。
         addressBookMapper.insert(addressBook);
     }
 

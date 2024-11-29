@@ -102,6 +102,7 @@ public class AddressBookController {
         AddressBook addressBook = new AddressBook();
         addressBook.setIsDefault(1);
         addressBook.setUserId(BaseContext.getCurrentId());
+        //构造两个条件，然后根据这两个条件进行查询。
         List<AddressBook> list = addressBookService.list(addressBook);
 
         if (list != null && list.size() == 1) {
