@@ -1,8 +1,10 @@
 package com.sky.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
 import com.sky.context.BaseContext;
+import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersPaymentDTO;
 import com.sky.dto.OrdersSubmitDTO;
 import com.sky.entity.*;
@@ -10,13 +12,16 @@ import com.sky.exception.AddressBookBusinessException;
 import com.sky.exception.OrderBusinessException;
 import com.sky.exception.ShoppingCartBusinessException;
 import com.sky.mapper.*;
+import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.OrderService;
 import com.sky.utils.WeChatPayUtil;
 import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderSubmitVO;
+import com.sky.vo.OrderVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,7 +47,12 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private UserMapper userMapper;
 
-    @Override
+
+    /**
+     * 用户下单
+     * @param ordersSubmitDTO
+     * @return
+     */
     @Transactional //事务
     public OrderSubmitVO submitOrder(OrdersSubmitDTO ordersSubmitDTO) {
 
@@ -153,6 +163,48 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
+    /**
+     * 用户端分页查询历史订单
+     * @param page
+     * @param pageSize
+     * @param status
+     * @return
+     */
+    @Override
+    public PageResult pageQueryUser(int page, int pageSize, Integer status) {
+        //开始分页，指定页码和每页记录数
+        PageHelper.startPage(page, pageSize);
+
+        //创建查询条件对象，用于封装查询参数
+        OrdersPageQueryDTO ordersPageQueryDTO = new OrdersPageQueryDTO();
+        ordersPageQueryDTO.setUserId(BaseContext.getCurrentId()); //查询当前用户的订单
+        ordersPageQueryDTO.setStatus(status); //设置订单状态
+
+        //执行查询，返回一个 Page 对象，包含分页数据的总记录数还有一个列表List<Orders>，列表内元素是Orders（从orders表中查询到的）
+        Page<Orders> page1 = orderMapper.pageQuery(ordersPageQueryDTO);
+
+        //创建一个存放结果的列表————最终结果要求List<OrderVO>，list列表中存放的是VO对象
+        List<OrderVO> list = new ArrayList<>();
+
+        //判断查询结果是否为空
+        if(page1 != null && page1.getTotalElements() > 0){
+            //遍历查询结果获取每一个订单
+            for (Orders orders : page1) {
+                Long orderId = orders.getId(); //获取订单ID
+
+                //根据订单号，在订单明细表中查询订单明细数据
+                List<OrderDetail> orderDetails = orderDetailMapper.getByOrderID(orderId);
+
+                //创建VO对象，用于封装订单及其明细信息
+                OrderVO orderVO = new OrderVO();
+                //VO对象继承Orders对象，所有先将其全部信息拷贝过去
+                BeanUtils.copyProperties(orders, orderVO); //赋值订单的基本信息到orderVO对象中
+                orderVO.setOrderDetailList(orderDetails); //再添加订单明细数据到VO对象中
+                list.add(orderVO);
+            }
+        }
+        return new PageResult(page1.getTotalElements(), list);
+    }
 
 
 }

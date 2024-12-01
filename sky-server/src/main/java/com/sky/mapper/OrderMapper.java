@@ -1,8 +1,10 @@
 package com.sky.mapper;
 
+import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.entity.Orders;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+import org.springframework.data.domain.Page;
 
 @Mapper
 public interface OrderMapper {
@@ -22,4 +24,5 @@ public interface OrderMapper {
      */
     void update(Orders orders);
 
+    Page<Orders> pageQuery(OrdersPageQueryDTO ordersPageQueryDTO);
 }
