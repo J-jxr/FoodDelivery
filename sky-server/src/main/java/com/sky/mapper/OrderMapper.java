@@ -24,6 +24,12 @@ public interface OrderMapper {
      */
     void update(Orders orders);
 
+
+    /**
+     * 历史订单分页查询
+     * @param ordersPageQueryDTO
+     * @return
+     */
     Page<Orders> pageQuery(OrdersPageQueryDTO ordersPageQueryDTO);
 
 
@@ -33,4 +39,7 @@ public interface OrderMapper {
      */
     @Select("select * from orders where id = #{id}")
     Orders getByOrderId(Long id);
+
+    @Select("select count(id) from orders where status = #{status}")
+    Integer countStatus(Integer toBeConfirmed);
 }
