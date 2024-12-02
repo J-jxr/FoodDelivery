@@ -45,6 +45,15 @@
         </set>
         where id = #{id}
     </update>
+    <update id="batchUpdateOrders">
+        <foreach collection="list" item="item" separator=";">  //separator属性用来指定生成的多个SQL语句之间的分隔符，说白了就是SQL语句通常是以分号结尾的
+            update orders
+            set status = #{item.status},
+                cancel_reason = #{item.cancelReason},
+                cancel_time = #{item.cancelTime}
+            where id = #{item.id}
+        </foreach>
+    </update>
 
     <select id="pageQuery" resultType="Orders">
         select * from orders

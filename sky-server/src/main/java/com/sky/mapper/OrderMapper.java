@@ -2,9 +2,12 @@ package com.sky.mapper;
 
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.entity.Orders;
+import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.data.domain.Page;
+
+import java.time.LocalDateTime;
 
 @Mapper
 public interface OrderMapper {
@@ -42,4 +45,13 @@ public interface OrderMapper {
 
     @Select("select count(id) from orders where status = #{status}")
     Integer countStatus(Integer toBeConfirmed);
+
+
+    @Select("select * from orders where status = #{status} and order_time < #{ordertime}")
+    List<Orders> getByStatusAndOrderTimeLT(Integer status, LocalDateTime ordertime);
+
+    void batchUpdateOrders(List<Orders> updateList);
+
+    @Select("select * from orders where status = #{status} and order_time < #{time}")
+    List<Orders> getByStatusAndOrdertimeLT(Integer status, LocalDateTime time);
 }
