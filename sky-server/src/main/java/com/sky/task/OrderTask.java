@@ -35,7 +35,7 @@ public class OrderTask {
         List<Orders> ordersList = orderMapper.getByStatusAndOrderTimeLT(Orders.PENDING_PAYMENT,time);
 
         if(!ordersList.isEmpty()){
-            //采用stream流的方式，来创建一个新的OrdersList用于执行update操作。
+            //采用stream流的方式，来创建一个新的updateList用于执行update操作。
             List<Orders> updateList = ordersList.stream().map(x -> {
                 Orders orders = new Orders();
                 orders.setStatus(Orders.CANCELLED);

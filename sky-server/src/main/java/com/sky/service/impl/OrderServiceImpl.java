@@ -174,7 +174,7 @@ public class OrderServiceImpl implements OrderService {
         Map map  = new HashMap();
         map.put("type", 1); // 1表示来单提醒，2表示客户催单
         map.put("orderid", ordersDB.getId());
-        map.put("content", "订单号" + outTradeNo);
+        map.put("content", "" + outTradeNo);
 
         String jsonString = JSON.toJSONString(map);
         //通过websocket向商家端推送消息
@@ -490,6 +490,27 @@ public class OrderServiceImpl implements OrderService {
 
         orderMapper.update(orders);
     }
+
+    /**
+     * 用户催单
+     *
+     * @param id
+     */
+    public void reminder(Long id) {
+        // 查询订单是否存在
+        Orders orders = orderMapper.getById(id);
+        if (orders == null) {
+            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        }
+
+        //基于WebSocket实现催单
+        Map map = new HashMap();
+        map.put("type", 2);//2代表用户催单
+        map.put("orderId", id);
+        map.put("content", "订单号：" + orders.getNumber());
+        webSocketServer.sendToAllClient(JSON.toJSONString(map));
+    }
+
     private List<OrderVO> getOrderVOList(Page<Orders> pages){
         List<OrderVO> orderVOList = new ArrayList<>();
 
