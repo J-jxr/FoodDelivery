@@ -24,7 +24,7 @@ public class WebSocketServer {
     private static Map<String, Session> sessionMap = new HashMap<>();
 
     /**
-     * 连接建立成功时调用的方法
+     * 连接建立成功时， 客户端浏览器会自动调用该方法——————前端通过JS代码实现，我们就不管了，哈哈哈哈哈哈
      * 当客户端成功连接到WebSocket服务器时，系统自动调用此方法
      *
      * @param session 当前客户端的WebSocket会话对象
@@ -68,7 +68,7 @@ public class WebSocketServer {
     }
 
     /**
-     * 群发消息给所有已连接的客户端
+     * 群发消息给所有已连接的客户端——————其实主要就是使用这个功能，在后端，向已经建立连接的客户端浏览器发送消息
      *
      * @param message 要发送的消息内容
      */
