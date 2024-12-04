@@ -1,5 +1,6 @@
 package com.sky.mapper;
 
+import com.sky.dto.GoodsSalesDTO;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.entity.Orders;
 import java.util.List;
@@ -69,4 +70,8 @@ public interface OrderMapper {
      * @return
      */
     Double sumByMap(Map map);
+
+    List<GoodsSalesDTO> getSalesTop10(LocalDateTime beginTime, LocalDateTime endTime);
+
+    Integer countByMap(Map<String, Object> map);
 }
