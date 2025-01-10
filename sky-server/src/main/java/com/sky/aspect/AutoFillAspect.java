@@ -24,6 +24,7 @@ import java.time.LocalDateTime; // 用于获取当前时间
 @Component  // 将该类交给Spring容器管理，使其成为一个Spring Bean
 @Slf4j  // 使用@Slf4j生成日志对象，便于记录日志
 public class AutoFillAspect {
+
     /**
      * 定义切入点：拦截所有标注了@AutoFill注解的方法
      * execution(* com.sky.mapper.*.*(..)) 表示拦截com.sky.mapper包下的所有方法
@@ -33,6 +34,7 @@ public class AutoFillAspect {
     @Pointcut("execution(* com.sky.mapper.*.*(..)) && @annotation(com.sky.annotation.AutoFill)")
     public void autoFillPointCut() {
     } // 切入点方法，定义了需要拦截哪些方法
+
 
     /**
      * 前置通知：在匹配的目标方法执行前执行
@@ -66,7 +68,8 @@ public class AutoFillAspect {
         // 4. 根据不同的数据库操作类型，为对应属性赋值
         if (operationType == OperationType.INSERT) {
             // 如果是INSERT操作，填充创建时间、创建人、更新时间、更新人
-            //这个其实就是反射中，如何获取成员方法的，通过反射获取类对象，然后通过反射获取类对象的方法，最后通过反射调用方法
+            //这个其实就是反射中，如何获取成员方法的
+            //通过反射获取类对象，然后通过反射获取类对象的方法，最后通过反射调用方法
             Method setUpdateTime = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_TIME, LocalDateTime.class);
             Method setUpdateUser = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_USER, Long.class);
             Method setCreateTime = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_CREATE_TIME, LocalDateTime.class);
@@ -79,7 +82,8 @@ public class AutoFillAspect {
             setCreateUser.invoke(entity, currentId); // 填充创建人
         } else if (operationType == OperationType.UPDATE) {
             // 如果是UPDATE操作，仅填充更新时间和更新人
-            //这个其实就是反射中，如何获取成员方法的，通过反射获取类对象，然后通过反射获取类对象的方法，最后通过反射调用方法
+            //这个其实就是反射中，如何获取成员方法的
+            //通过反射获取类对象，然后通过反射获取类对象的方法，最后通过反射调用方法
             Method setUpdateTime = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_TIME, LocalDateTime.class);
             Method setUpdateUser = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_USER, Long.class);
 

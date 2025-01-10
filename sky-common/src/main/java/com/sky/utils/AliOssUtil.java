@@ -1,5 +1,4 @@
 package com.sky.utils;
-
 import com.aliyun.oss.ClientException;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
@@ -8,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import java.io.ByteArrayInputStream;
-
 /**
  * 阿里云 OSS 工具类，用于文件上传到阿里云 OSS。
  */
@@ -16,19 +14,14 @@ import java.io.ByteArrayInputStream;
 @AllArgsConstructor // Lombok 注解，自动生成全参构造器
 @Slf4j // Lombok 注解，生成 log 对象，用于记录日志
 public class AliOssUtil {
-
     // 阿里云 OSS 的访问域名或地址，例如：https://oss-cn-shanghai.aliyuncs.com
     private String endpoint;
-
     // 阿里云账号的 AccessKey ID，用户身份的标识，用于鉴权
     private String accessKeyId;
-
     // 阿里云账号的 AccessKey Secret，用户身份的密钥，用于鉴权
     private String accessKeySecret;
-
     // 阿里云 OSS 上的存储桶名称，指定文件存储的具体位置
     private String bucketName;
-
     /**
      * 上传文件到阿里云 OSS。
      *

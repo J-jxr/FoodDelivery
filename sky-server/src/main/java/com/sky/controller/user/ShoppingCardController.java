@@ -64,14 +64,5 @@ public class ShoppingCardController {
         return Result.success();
     }
 
-    /**
-     * 清空购物车
-     *
-     * @return
-     */
-    @DeleteMapping("/clean")
-    public Result<String> clean() {
-        shoppingCartService.cleanShoppingCart();
-        return Result.success();
-    }
+   
 }

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
  * 该类使用 Spring Boot 的 @ConfigurationProperties 注解来自动将配置文件中的属性映射到字段中。
  * 使用 @Component 注解将该类注册为 Spring 容器的一个组件，使其可以被依赖注入。
  */
+
 @Component // 将 JwtProperties 注册为一个 Spring 组件，便于在项目中注入使用
 @ConfigurationProperties(prefix = "sky.jwt")
 // 将配置文件中以 "sky.jwt" 为前缀的配置项绑定到此类的字段

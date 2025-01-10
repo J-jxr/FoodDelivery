@@ -117,12 +117,18 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
      */
     @Override
     protected void addResourceHandlers(ResourceHandlerRegistry registry) {
+        // 打印日志，标明开始设置静态资源映射
         log.info("开始设置静态资源映射...");
-        registry.addResourceHandler("/doc.html") // Knife4j 文档的访问路径
-                .addResourceLocations("classpath:/META-INF/resources/"); // 文档的资源位置
-        registry.addResourceHandler("/webjars/**") // WebJars 静态资源路径
-                .addResourceLocations("classpath:/META-INF/resources/webjars/"); // 静态资源的位置
+
+        // 配置 Knife4j 文档的静态资源访问路径
+        registry.addResourceHandler("/doc.html")  // 当访问 /doc.html 时
+                .addResourceLocations("classpath:/META-INF/resources/"); // 定位到 classpath 下 META-INF/resources 目录中的资源
+
+        // 配置 WebJars 的静态资源访问路径
+        registry.addResourceHandler("/webjars/**")  // 当访问 /webjars/** 路径下的资源时
+                .addResourceLocations("classpath:/META-INF/resources/webjars/"); // 定位到 classpath 下 META-INF/resources/webjars/ 目录中的资源
     }
+
 
     /**
      * 扩展 Spring MVC 的消息转换器

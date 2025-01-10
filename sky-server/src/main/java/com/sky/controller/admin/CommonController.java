@@ -59,7 +59,6 @@ public class CommonController {
             log.error("文件上传失败()", e);
             // 捕获文件处理过程中的异常，并打印堆栈信息
             e.printStackTrace();
-
             // 返回失败的统一结果封装对象，包含错误提示信息
             return Result.error(MessageConstant.UPLOAD_FAILED);
         }
