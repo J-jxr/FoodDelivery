@@ -4,7 +4,7 @@
 
 ## 业务功能
 
-![image-20250110202046468](D:/typora/picture/image-20250110202046468.png)
+![image1](assets/images/image-20250110202046468.png)
 
 ## 技术栈
 
@@ -72,7 +72,7 @@ src
 通过访问以下路径，你可以查看并测试所有的API接口：
 
 - Swagger UI  http://localhost:8080/doc.html
-- ![image-20250110174132206](D:/typora/picture/image-20250110174132206.png)
+- ![image2](assets/images/image-20250110174132206.png)
 
 ## 安装与运行
 
