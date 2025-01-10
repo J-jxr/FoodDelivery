@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.mapper.ShoppingCartMapper">
+
+    <select id="list" resultType="com.sky.entity.ShoppingCart">
+        <!-- 查询购物车表中的所有字段 -->
+        select * from shopping_cart
+        <where>
+            <!-- 如果 userId 不为空，则添加条件筛选用户ID -->
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+
+            <!-- 如果 setmealId 不为空，则添加条件筛选套餐ID -->
+            <if test="setmealId != null">
+                and setmeal_id = #{setmealId}
+            </if>
+
+            <!-- 如果 dishId 不为空，则添加条件筛选菜品ID -->
+            <if test="dishId != null">
+                and dish_id = #{dishId}
+            </if>
+
+            <!-- 如果 dishFlavor 不为空，则添加条件筛选菜品口味 -->
+            <if test="dishFlavor != null">
+                and dish_flavor = #{dishFlavor}
+            </if>
+        </where>
+    </select>
+
+
+    <insert id="insertBatch" parameterType="list">
+        insert into shopping_cart (name, image, user_id, dish_id, setmeal_id, dish_flavor, number, amount, create_time)
+        values
+        <foreach collection="shoppingCartList" item="sc" separator=",">
+            (#{sc.name},#{sc.image},#{sc.userId},#{sc.dishId},#{sc.setmealId},#{sc.dishFlavor},#{sc.number},#{sc.amount},#{sc.createTime})
+        </foreach>
+    </insert>
+</mapper>

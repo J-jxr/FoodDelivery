@@ -1,0 +1,94 @@
+server:
+  port: 8080
+
+spring:
+  profiles:
+    active: dev
+  main:
+    allow-circular-references: true
+  datasource:
+    druid:
+      driver-class-name: ${sky.datasource.driver-class-name}
+      url: jdbc:mysql://${sky.datasource.host}:${sky.datasource.port}/${sky.datasource.database}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+      username: ${sky.datasource.username}
+      password: ${sky.datasource.password}
+  redis:
+    host: ${sky.redis.host}
+    port: ${sky.redis.port}
+    password: ${sky.redis.password}
+    database: ${sky.redis.database}
+
+mybatis:
+  # 配置 MyBatis 的相关设置
+  # Mapper 配置文件位置
+  mapper-locations: classpath:mapper/*.xml
+  # 说明：指定 MyBatis 的 Mapper XML 文件所在的位置。
+  #       "classpath:" 表示资源路径从项目的类路径下开始。
+  #       这里使用通配符 "*.xml"，表示加载 `mapper` 文件夹下的所有 `.xml` 文件。
+  #       这些文件用于定义 SQL 映射和操作。
+
+  # 实体类所在包
+  type-aliases-package: com.sky.entity
+  # 说明：设置实体类的所在包路径。
+  #       MyBatis 会自动扫描这个包下的类，并为其注册别名（默认是类名首字母小写）。
+  #       别名可以简化 XML 中引用实体类的写法。
+  #       例如：实体类 `com.sky.entity.Employee` 的别名是 `employee`。
+
+  configuration:
+    # 开启驼峰命名转换
+    map-underscore-to-camel-case: true
+    # 说明：将数据库中的字段名自动转换为 Java 属性的驼峰命名形式。
+    #       例如：
+    #       - 数据库字段 `user_name` 会自动映射到 Java 属性 `userName`。
+    #       - 这样就不需要手动指定字段和属性的映射关系了。
+
+
+logging:
+  level:
+    com:
+      sky:
+        mapper: debug
+        service: info
+        controller: info
+
+sky:
+  jwt:
+    # 设置管理端生成 JWT 签名时使用的密钥，确保密钥保密性，用于签名和验证 JWT 的合法性
+    admin-secret-key: itcast
+    # 设置管理端生成的 JWT 令牌有效时间，单位为毫秒（7200000 毫秒 = 2 小时）
+    admin-ttl: 7200000
+    # 设置管理端前端传递 JWT 令牌时所使用的请求头名称，通常是 "Authorization" 或自定义名称
+    admin-token-name: token
+
+    # ---------------------------------------------------------------------------
+
+    # 设置用户端生成 JWT 签名时使用的密钥，作用与 admin-secret-key 类似
+    user-secret-key: itcast
+    # 设置用户端生成的 JWT 令牌有效时间，单位为毫秒（7200000 毫秒 = 2 小时）
+    user-ttl: 7200000
+    # 设置用户端前端传递 JWT 令牌时所使用的请求头名称
+    user-token-name: authentication
+
+  alioss:
+    # 设置阿里云对象存储（OSS）的服务域名，使用占位符加载具体值
+    endpoint: ${sky.alioss.endpoint}
+    # 设置阿里云对象存储的访问密钥 ID，使用占位符加载具体值
+    access-key: ${sky.alioss.access-key}
+    # 设置阿里云对象存储的访问密钥 Secret，使用占位符加载具体值
+    secret-key: ${sky.alioss.secret-key}
+    # 设置阿里云对象存储的存储桶名称，使用占位符加载具体值
+    bucket-name: ${sky.alioss.bucket-name}
+
+  wechat:
+    # 设置微信小程序的 App ID，使用占位符加载具体值
+    appid: ${sky.wechat.app-id}
+    # 设置微信小程序的 App Secret，用于接口访问时的身份验证，使用占位符加载具体值
+    secret: ${sky.wechat.app-secret}
+
+
+
+# 使用占位符（${}）标记的值通常来自环境变量或其他配置文件，便于在不同环境（开发、测试、生产）中灵活调整。
+
+
+
+
